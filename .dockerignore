@@ -1,0 +1,5 @@
+node_modules
+.git
+data
+_dev_start.log
+npm-debug.log*
