@@ -370,7 +370,6 @@ function requireAuth(req, rootDb) {
   if (!session) return null
   const user = rootDb.users.find((u) => u.id === session.userId)
   if (!user) return null
-  session.lastSeenAt = nowIso()
   return { user, token }
 }
 
@@ -683,6 +682,11 @@ const server = createServer(async (req, res) => {
     }
 
     if (pathname === '/api/auth/me' && req.method === 'GET') {
+      const session = rootDb.sessions.find((s) => s.token === auth.token)
+      if (session) {
+        session.lastSeenAt = nowIso()
+        await writeDb(rootDb)
+      }
       sendJson(res, 200, { user: sanitizeUser(auth.user) })
       return
     }
